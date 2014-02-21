@@ -31,6 +31,9 @@ on_boot() {
     mountpoint -q /dev/pts || mount -t devpts devpts /dev/pts -o mode=0620,gid=5,nosuid,noexec
     mountpoint -q /dev/shm || mount -t tmpfs shm /dev/shm -o mode=1777,nosuid,nodev
 
+    # adaption: make /run/lock (Arch)
+    mkdir -p -m 1777 /run/lock
+
     #===================
     # initialize system
     echo_color 3 setting up loopback device...
@@ -55,7 +58,8 @@ on_boot() {
 
     echo_color 3 mounting...
     mount -a
-    mount -o remount,rw /
+    # adaption: (isn't needed, initramfs does that)
+    #mount -o remount,rw /
 
     #===================
     # load /etc/minirc.local
@@ -146,7 +150,8 @@ default_start() {
         icecast -b -c /etc/icecast.xml;;
     *)
         # fallback: start the command
-        "$1";;
+        # (adaption: prevent starting of multiple instances)
+        custom_poll "$1" && echo_color 1 "Seems already running..." || "$1";;
     esac
 }
 
@@ -204,9 +209,15 @@ shutdown)
 start|stop|restart)
     cmd="$1"
     shift
-    for dmn in ${@:-$DAEMONS}; do
-        custom_${cmd} "$dmn"
-    done;;
+    # (adaption: don't start _all_ when nothing entered)
+    if [ "$#" -gt 0 ]; then
+        for dmn in $@; do
+            custom_${cmd} "$dmn"
+        done
+    else
+        echo "[list of daemons] for start/stop/restart required"
+        echo "See: rc --help"
+    fi;;
 ''|list)
     # list all daemons and their status
     for dmn in $DAEMONS; do
@@ -227,5 +238,8 @@ start|stop|restart)
     echo "   $self init     initialize the system (use in /etc/inittab only!)"
     echo "   $self start    starts daemons"
     echo "   $self stop     stops daemons"
-    echo "   $self restart  restarts daemons";;
+    echo "   $self restart  restarts daemons"
+    echo
+    echo "[list of daemons] required for start, stop and restart"
+    ;;
 esac
