@@ -1,0 +1,32 @@
+#!/bin/bash
+#
+# /etc/minirc.local: Local startup script.
+# (copied from rc.local_SAVE, adapted)
+#
+# Called by rc
+#
+##
+
+# make /tmp tmpfs
+echo_color 5 create tmpfs...
+mount -t tmpfs tmpfs /tmp -o mode=1777,nosuid,nodev
+
+# enable swap
+echo_color 5 enable swap...
+swapon -a
+
+# file system check ???
+
+# switch off DGP with vgaswitcheroo
+#modprobe radeon
+# acc. to wiki this should not be needed anymore
+# but it doesn't work w/o...
+# (early KMS is enabled for both and DPM for radeon)
+echo_color 5 turn off DGP...
+echo OFF > /sys/kernel/debug/vgaswitcheroo/switch
+
+
+# set backlight brightness to lower level
+# --> replace this by a control script
+echo_color 5 set backlight brightness...
+echo "2600" > /sys/class/backlight/intel_backlight/brightness

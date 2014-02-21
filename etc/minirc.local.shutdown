@@ -1,0 +1,11 @@
+#!/bin/bash
+#
+# /etc/minirc.local.shutdown: Local shutdown script.
+# (copied from minirc.local, adapted)
+#
+##
+
+# disable swap
+echo_color 5 disable swap...
+swapoff -a
+
