@@ -78,6 +78,14 @@ on_boot() {
             custom_start "$dmn"
         fi
     done
+
+    # adaption for sinit:
+    # spawn gettys
+    # (using respawn script from sinit)
+    sh -c 'respawn -d 3 /sbin/agetty --noclear -8 -s 38400 tty1 linux' &
+    sh -c 'respawn -d 3 /sbin/agetty -8 -s 38400 tty2 linux' &
+    sh -c 'respawn -d 3 /sbin/agetty -8 -s 38400 tty3 linux' &
+    sh -c 'respawn -d 3 /sbin/agetty -8 -s 38400 tty4 linux' &
 }
 
 on_shutdown() {
@@ -85,13 +93,6 @@ on_shutdown() {
     # stop the default daemons
     echo_color 3 stopping daemons...
     custom_stop all
-
-    #===================
-    # load minirc.local.shutdown
-    if [ -x /etc/minirc.local.shutdown ]; then
-        echo_color 3 loading /etc/minirc.local.shutdown...
-        /etc/minirc.local.shutdown
-    fi
 
     #===================
     # shut down udev
@@ -102,10 +103,46 @@ on_shutdown() {
         killall udevd
     fi
 
+    # adaption for sinit:
+    # kill first
+    # (using busybox's killall5)
+    #
+    # wait for daemons ? (brebs)
+    # evtl. sync here ? (brebs)
+    #
+    # nicely
+    echo_color 3 sending all processes the TERM signal...
+    busybox killall5 -TERM
+    sleep 3
+    # hard
+    echo_color 3 sending all processes the KILL signal...
+    busybox killall5 -KILL
+
+    #===================
+    # load minirc.local.shutdown
+    if [ -x /etc/minirc.local.shutdown ]; then
+        echo_color 3 loading /etc/minirc.local.shutdown...
+        /etc/minirc.local.shutdown
+    fi
+
+    # adaption for sinit:
+    # umount everything
+    # double sync again ? (brebs)
+    echo_color 3 unmounting...
+    /bin/umount -a -r
+
     #===================
     # umount the API filesystem
     echo_color 3 unmounting API filesystem...
     umount -r /run
+
+    # adaption for sinit:
+    /bin/mount -o remount,ro /
+
+    # double sync even more ? (brebs)
+    # or wait, sleep ? (morpheus)
+    sync
+    sleep 3
 }
 
 default_start() {
@@ -204,8 +241,26 @@ echo_color() {
 case "$1" in
 init)
     on_boot;;
-shutdown)
-    on_shutdown;;
+#shutdown)
+poweroff)
+    # adaption for sinit:
+    # inform
+    echo "System is going down for halt - now\!" | wall
+    # init
+    on_shutdown
+    # poweroff
+    # (using busybox's halt)
+    busybox halt -f
+    ;;
+reboot)
+    # inform
+    echo "System is going down for reboot - now\!" | wall
+    # init
+    on_shutdown
+    # poweroff
+    # (using busybox's halt)
+    busybox reboot -f
+    ;;
 start|stop|restart)
     cmd="$1"
     shift
