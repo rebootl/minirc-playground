@@ -1,0 +1,38 @@
+minirc playground
+=================
+
+
+Personal playground to experiment w/ minirc
+and to provide a "working" configuration example,
+but _not intented to be used on other systems_
+use the appropriate sources or packages instead.
+
+Based upon the installed files of minirc on Arch.
+
+
+branches
+- master (unmodified files)
+- devel modified to my personal preference/convenience
+- sinit modified to replace busybox init by sinit
+
+
+minirc (GPL2 licensed)
+------
+repo: https://github.com/hut/minirc
+arch forum thread: https://bbs.archlinux.org/viewtopic.php?id=162606
+
+From the README:
+"About
+-----
+
+Authors: Roman Zimbelmann, Sam Stuewe
+License: GPL2
+
+Parts of the function on_boot() and the start/stop function of iptables were
+taken from archlinux initscripts (http://www.archlinux.org). I was unable to
+determine the author or authors of those parts."
+
+sinit (MIT licensed)
+-----
+repo: http://git.2f30.org/sinit/
+arch forum thread: https://bbs.archlinux.org/viewtopic.php?id=176854
