@@ -11,8 +11,7 @@ Based upon the installed files of minirc on Arch.
 
 
 branches
-- master (unmodified files)
-- devel modified to my personal preference/convenience
+- master/devel modified to my personal preference/convenience
 - sinit modified to replace busybox init by sinit
 
 
