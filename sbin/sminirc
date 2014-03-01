@@ -280,7 +280,7 @@ start|stop|restart)
             custom_${cmd} "$dmn"
         done
     else
-        echo "[list of daemons] for start/stop/restart required"
+        echo "[list of daemons] or all required for start/stop/restart"
         echo "See: rc --help"
     fi;;
 ''|list)
@@ -300,11 +300,13 @@ start|stop|restart)
     echo
     echo "Actions:"
     echo "   $self list     shows status of all daemons (default action)"
-    echo "   $self init     initialize the system (use in /etc/inittab only!)"
+    echo "   $self init     initialize the system (call from sinit only!)"
+    echo "   $self poweroff shutdown and poweroff system (call from sinit only!)"
+    echo "   $self reboot   shutdown and reboot system (call from sinit only!)"
     echo "   $self start    starts daemons"
     echo "   $self stop     stops daemons"
     echo "   $self restart  restarts daemons"
     echo
-    echo "[list of daemons] required for start, stop and restart"
+    echo "[list of daemons] or all required for start, stop and restart"
     ;;
 esac
