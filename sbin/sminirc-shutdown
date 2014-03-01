@@ -7,15 +7,17 @@ case "$2" in
         TIME="$2";;
 esac
 
+# (something like this could be used to invoke from symlinks)
 # check if invoked by symlink
 # and handle appropriately
-if [ $(basename $0) == 'reboot' ]; then
-    kill -s INT 1
-elif [ $(basename $0) == 'poweroff' ]; then
-    kill -s USR1 1
-# invoked by cmdline
-else
-    case "$1" in
+#if [ $(basename $0) == 'reboot' ]; then
+#    kill -s INT 1
+#elif [ $(basename $0) == 'poweroff' ]; then
+#    kill -s USR1 1
+## invoked by cmdline
+#else
+
+case "$1" in
 #        -H|--halt)
 #            sleep $TIME
 #            /sbin/halt;;
@@ -44,5 +46,6 @@ else
         echo "-r/--reboot       reboot"
         echo "-c                cancel"
         echo "time in seconds or now"
-    esac
-fi
+esac
+
+#fi
