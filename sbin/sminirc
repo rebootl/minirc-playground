@@ -125,11 +125,10 @@ on_shutdown() {
         /etc/minirc.local.shutdown
     fi
 
-    # adaption for sinit:
-    # umount everything
-    # double sync again ? (brebs)
-    echo_color 3 unmounting...
-    /bin/umount -a -r
+    # adaption:
+    # detach loop devices
+    echo_color 3 detach loop devices...
+    losetup -D
 
     #===================
     # umount the API filesystem
@@ -137,6 +136,13 @@ on_shutdown() {
     umount -r /run
 
     # adaption for sinit:
+    # umount everything
+    # double sync again ? (brebs)
+    echo_color 3 unmounting...
+    /bin/umount -a -r
+
+    # adaption for sinit:
+    echo_color 3 remount root read-only...
     /bin/mount -o remount,ro /
 
     # double sync even more ? (brebs)
@@ -248,6 +254,8 @@ poweroff)
     echo "System is going down for halt - now\!" | wall
     # init
     on_shutdown
+    # debug wait
+    read -p "Press a key to proceed..."
     # poweroff
     # (using busybox's halt)
     busybox halt -f
@@ -257,6 +265,8 @@ reboot)
     echo "System is going down for reboot - now\!" | wall
     # init
     on_shutdown
+    # debug wait
+    read -p "Press a key to proceed..."
     # poweroff
     # (using busybox's halt)
     busybox reboot -f
