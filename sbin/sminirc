@@ -125,11 +125,6 @@ on_shutdown() {
         /etc/minirc.local.shutdown
     fi
 
-    # adaption:
-    # detach loop devices
-    echo_color 3 detach loop devices...
-    losetup -D
-
     #===================
     # umount the API filesystem
     echo_color 3 unmounting API filesystem...
@@ -137,18 +132,13 @@ on_shutdown() {
 
     # adaption for sinit:
     # umount everything
-    # double sync again ? (brebs)
     echo_color 3 unmounting...
     /bin/umount -a -r
 
     # adaption for sinit:
+    # remount root ro
     echo_color 3 remount root read-only...
     /bin/mount -o remount,ro /
-
-    # double sync even more ? (brebs)
-    # or wait, sleep ? (morpheus)
-    sync
-    sleep 3
 }
 
 default_start() {
@@ -250,23 +240,27 @@ init)
 #shutdown)
 poweroff)
     # adaption for sinit:
-    # inform
-    echo "System is going down for halt - now\!" | wall
-    # init
     on_shutdown
-    # debug wait
-    read -p "Press a key to proceed..."
-    # poweroff
+    # in case you suspect or experience problems during shutdown you may want to 
+    # enable something like:
+    # debug wait/shell
+    read -n 1 -p "Press [d] for a debug shell or another key to proceed..." -s key
+    if [ "$key" == 'd' ] || [ "$key" == 'D' ]; then
+        bash
+    fi
     # (using busybox's halt)
     busybox halt -f
     ;;
 reboot)
-    # inform
-    echo "System is going down for reboot - now\!" | wall
     # init
     on_shutdown
-    # debug wait
-    read -p "Press a key to proceed..."
+    # in case you suspect or experience problems during shutdown you may want to 
+    # enable something like:
+    # debug wait/shell
+    read -n 1 -p "Press [d] for a debug shell or another key to proceed..." -s key
+    if [ "$key" == 'd' ] || [ "$key" == 'D' ]; then
+        bash
+    fi
     # poweroff
     # (using busybox's halt)
     busybox reboot -f
@@ -300,9 +294,9 @@ start|stop|restart)
     echo
     echo "Actions:"
     echo "   $self list     shows status of all daemons (default action)"
-    echo "   $self init     initialize the system (call from sinit only!)"
-    echo "   $self poweroff shutdown and poweroff system (call from sinit only!)"
-    echo "   $self reboot   shutdown and reboot system (call from sinit only!)"
+    echo "   $self init     initialize the system (call via shutdown only!)"
+    echo "   $self poweroff shutdown and poweroff system (call via shutdown only!)"
+    echo "   $self reboot   shutdown and reboot system (call via shutdown only!)"
     echo "   $self start    starts daemons"
     echo "   $self stop     stops daemons"
     echo "   $self restart  restarts daemons"
