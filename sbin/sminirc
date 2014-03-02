@@ -239,6 +239,8 @@ init)
     on_boot;;
 #shutdown)
 poweroff)
+    # inform
+    echo "System is going down for reboot - now\!" | wall
     # adaption for sinit:
     on_shutdown
     # in case you suspect or experience problems during shutdown you may want to 
@@ -252,6 +254,8 @@ poweroff)
     busybox halt -f
     ;;
 reboot)
+    # inform
+    echo "System is going down for reboot - now\!" | wall
     # init
     on_shutdown
     # in case you suspect or experience problems during shutdown you may want to 
