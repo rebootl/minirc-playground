@@ -239,32 +239,37 @@ init)
     on_boot;;
 #shutdown)
 poweroff)
-    # inform
-    echo "System is going down for reboot - now\!" | wall
     # adaption for sinit:
+
+    # adaption: optional inform
+    echo "System is going down for poweroff - now\!" | wall
+
     on_shutdown
-    # in case you suspect or experience problems during shutdown you may want to 
-    # enable something like:
-    # debug wait/shell
+
+    # adaption: optional debug shell 
     read -n 1 -p "Press [d] for a debug shell or another key to proceed..." -s key
     if [ "$key" == 'd' ] || [ "$key" == 'D' ]; then
         bash
     fi
+
+    # reboot
     # (using busybox's halt)
     busybox halt -f
     ;;
 reboot)
-    # inform
+    # adaption for sinit:
+
+    # adaption: optional inform
     echo "System is going down for reboot - now\!" | wall
-    # init
+
     on_shutdown
-    # in case you suspect or experience problems during shutdown you may want to 
-    # enable something like:
-    # debug wait/shell
+
+    # adaption: optional debug shell 
     read -n 1 -p "Press [d] for a debug shell or another key to proceed..." -s key
     if [ "$key" == 'd' ] || [ "$key" == 'D' ]; then
         bash
     fi
+
     # poweroff
     # (using busybox's halt)
     busybox reboot -f
