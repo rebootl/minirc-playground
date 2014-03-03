@@ -254,7 +254,7 @@ poweroff)
 
     # reboot
     # (using busybox's halt)
-    busybox halt -f
+    busybox poweroff -f
     ;;
 reboot)
     # adaption for sinit:
