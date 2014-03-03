@@ -26,7 +26,7 @@ case "$1" in
             echo "System is going down for poweroff in $TIME seconds." | wall
             sleep $TIME
         fi
-        kill -s USR 1
+        kill -s USR1 1
         ;;
     -r|--reboot)
         if [ $TIME != 0 ]; then
